@@ -1,7 +1,7 @@
 'use strict';
 
 
-var devDep = ['node_modules/*'];
+var devDep = ['config.json','node_modules/*'];
 for (var key in require('./package.json').devDependencies) {
 	devDep.push('!node_modules/'+key);
 }
