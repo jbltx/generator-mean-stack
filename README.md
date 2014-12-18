@@ -48,7 +48,8 @@ Sets up a new MEAN stack app, generating all the boilerplate you need to get sta
 
 Example: 
 
-```yo mean-stack
+```
+yo mean-stack
 ```
 
 ## Serve and build
@@ -57,17 +58,20 @@ The generator makes a gruntfile configuration, so building your app becomes easy
 
 Build a fresh new distribution :
 
-```grunt
+```
+grunt
 ```
 
 Run the app server in development mode :
 
-```grunt serve
+```
+grunt serve
 ```
 
-You can define a ``production`` target to serve in production mode :
+You can define a `production` target to serve in production mode :
 
-```grunt serve:production
+```
+grunt serve:production
 ```
 
 **NB: this last command build automatically a new distribution before serving.**
