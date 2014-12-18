@@ -1,4 +1,4 @@
-'use script';
+'use strict';
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -17,6 +17,6 @@ taskSchema.statics = {
 		}
 		document.save(callback);
 	}
-}
+};
 
 mongoose.model('Task', taskSchema);
