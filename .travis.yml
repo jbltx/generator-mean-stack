@@ -1,0 +1,6 @@
+language: node_js
+node_js:
+  - '0.10'
+before_install:
+  - currentfolder=${PWD##*/}
+  - if [ "$currentfolder" != 'generator-mean-stack' ]; then cd .. && eval "mv $currentfolder generator-mean-stack" && cd generator-mean-stack; fi
