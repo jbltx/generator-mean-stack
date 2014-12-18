@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('<%= appName %>')
-	.controller('HeaderCtrl', function ($scope, $modal) {
+	.controller('HeaderCtrl', function ($scope, $modal, $http, $window) {
 
+		
 		var checkRemember = function ($q, $timeout, $remember, $window, $http) {
 			var deferred = $q.defer();
 			if($remember !== 'none') {
@@ -40,6 +41,15 @@ angular.module('<%= appName %>')
 					size: 'sm'
 				});
 		};
+
+		$scope.signout = function () {
+			$http
+				.post('/signout')
+				.success(function () {
+					$window.location.href='/';
+				});
+
+		}
 
 	});
 

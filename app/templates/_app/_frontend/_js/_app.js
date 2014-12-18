@@ -9,7 +9,7 @@ app.config([
     '$httpProvider',
     function ($routeProvider, $locationProvider, $httpProvider) {
 
-
+  
   var checkLoggedIn = function ($q, $timeout, $http, $location, $rootScope) {
     var deferred = $q.defer();
     $http.get('/signedin').success(function(user) {
@@ -27,7 +27,7 @@ app.config([
     });
     return deferred.promise;
   };
-
+ 
 
 
   $httpProvider.interceptors.push('ajaxInterceptor');
@@ -42,7 +42,7 @@ app.config([
       controller: '404Ctrl'
     })
   .when('/admin', {
-    templateUrl: 'views/profile.html',
+    templateUrl: 'views/admin.html',
     controller: 'AdminCtrl',
     resolve: {loggedin: checkLoggedIn}
   })
