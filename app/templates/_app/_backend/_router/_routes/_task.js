@@ -21,7 +21,7 @@ module.exports = function (isLoggedIn) {
 
 	router.post('/', isLoggedIn, function (req, res) {
 		var newData = new Model();
-		newData.createDoc(req.body, function (err) {
+		Model.fillDoc(newData, req.body, function (err) {
 			if(err) {
 				return res.status(500).send(err);
 			}
@@ -49,7 +49,7 @@ module.exports = function (isLoggedIn) {
 			if (!data) {
 				return res.status(404).end();
 			}
-			data.updateDoc(req.body, function (err) {
+			Model.fillDoc(data, req.body, function (err) {
 				if (err) {
 					return res.status(500).send(err);
 				}
