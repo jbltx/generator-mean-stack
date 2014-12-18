@@ -1,7 +1,7 @@
 'use strict';
 
 
-var devDep = ['config.json','node_modules/*'];
+var devDep = ['node_modules/*'];
 for (var key in require('./package.json').devDependencies) {
 	devDep.push('!node_modules/'+key);
 }
@@ -118,6 +118,12 @@ module.exports = function (grunt) {
 						expand: true,
 						cwd: '.',
 						src: devDep,
+						dest: '<%= dirs.build %>'
+					},
+					{
+						expand: true,
+						cwd: '<%= dirs.app %>',
+						src: 'config.json',
 						dest: '<%= dirs.build %>'
 					}
 				]
