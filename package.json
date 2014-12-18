@@ -1,10 +1,13 @@
 {
   "name": "generator-mean-stack",
-  "version": "0.0.0",
-  "description": "Yeoman generator",
+  "version": "0.1.0",
+  "description": "An other Yeoman Generator for MEAN (MongoDB, ExpressJS, AngularJS, NodeJS) applications",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "jbltx/generator-mean-stack",
+  "repository": {
+  	"type": "git",
+  	"url": "https://github.com/jbltx/generator-mean-stack.git"
+  },
   "author": {
     "name": "Mickael Bonfill",
     "email": "mickael.bonfill@gmail.com",
@@ -20,7 +23,19 @@
     "app"
   ],
   "keywords": [
-    "yeoman-generator"
+    "yeoman-generator",
+    "mean",
+    "stack",
+    "mongodb",
+    "express",
+    "angularjs",
+    "angular",
+    "mongoose",
+    "fullstack",
+    "javascript",
+    "generator",
+    "yo",
+    "passport"
   ],
   "dependencies": {
     "yeoman-generator": "^0.18.0",
