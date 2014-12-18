@@ -1,0 +1,27 @@
+{
+	"development": {
+		"host": "localhost",
+		"port": 8080
+	},
+	"production": {
+		"host": "localhost",
+		"port": 8080
+	},
+	"cookieSecret": "cookieSecret",
+	"sessionSecret": "sessionSecret",
+	"database": {
+		"name": "dbname",
+		"host": "localhost",
+		"port": 51980,
+		"user": "dbusername",
+		"password": "dbpassword"
+	},
+	"mail": {
+		"service": "Gmail",
+		"auth": {
+			"user": "guser@gmail.com",
+			"pass": "gpassword"
+		}
+	}
+
+}
