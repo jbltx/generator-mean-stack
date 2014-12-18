@@ -1,15 +1,58 @@
 'use strict';
 
 angular.module('<%= appName %>')
- 	.controller('SigninCtrl',function($scope,$modalInstance,$window,$http) {
+	.controller('HeaderCtrl', function ($scope, $modal) {
+
+		var checkRemember = function ($q, $timeout, $remember, $window, $http) {
+			var deferred = $q.defer();
+			if($remember !== 'none') {
+				$http.post('/signin').success(function () {
+					$timeout(function () { deferred.reject(); }, 0);
+					$window.location.href='/admin';
+				})
+				.error(function (err) {
+					console.log(err);
+					$timeout(deferred.resolve, 0 );
+				});
+			} 
+			else {
+				$timeout(deferred.resolve, 0 );
+			}
+			return deferred.promise;
+		};
+		
+
+
+		$scope.signinModal = function () {
+			$modal
+				.open({
+					templateUrl:'signin.html',
+					controller: 'SigninCtrl',
+					size: 'sm',
+					resolve: {remembered: checkRemember}
+				});
+		};
+		$scope.signupModal = function () {
+			$modal
+				.open({
+					templateUrl:'signup.html',
+					controller: 'SignupCtrl',
+					size: 'sm'
+				});
+		};
+
+	});
+
+angular.module('<%= appName %>')
+ 	.controller('SigninCtrl',function ($scope,$modalInstance,$window,$http) {
  		$scope.user = {};
  		$scope.signInMessage = '';
  		$scope.signin = function () {
 		    $http.post('/signin', $scope.user).success(function () {
 		    	$window.location.href='/admin';
 		    })
-		    .error(function () {
-		    	$scope.signInMessage = 'Wrong credentials, try again';
+		    .error(function (data,tentatives) {
+		    	$scope.signInMessage = 'Wrong credentials, try again ( '+tentatives+' tentative(s) )';
 		    });
 		};
 
@@ -19,7 +62,7 @@ angular.module('<%= appName %>')
  	});
 
 angular.module('<%= appName %>')
- 	.controller('SignupCtrl',function($scope,$modalInstance,$http,$window) {
+ 	.controller('SignupCtrl',function ($scope,$modalInstance,$http,$window) {
  		$scope.user = {};
  		$scope.signUpMessage = '';
  		$scope.signup = function () {

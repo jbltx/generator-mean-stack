@@ -182,8 +182,19 @@ module.exports = yeoman.generators.Base.extend({
     	this.copy('_app/_frontend/_views/_main.html','app/frontend/views/main.html');
     	this.copy('_app/_frontend/_views/_404.html','app/frontend/views/404.html');
     	this.copy('_app/_frontend/_views/_admin.html','app/frontend/views/admin.html');
-      this.copy('_app/_frontend/_views/_header.html','app/frontend/views/header.html');
-      this.copy('_app/_frontend/_views/_footer.html','app/frontend/views/footer.html');
+      this.fs.copyTpl(
+          this.templatePath('_app/_frontend/_views/_header.html'),
+          this.destinationPath('app/frontend/views/header.html'), {
+            appName: this.appName
+          }
+      );
+      this.fs.copyTpl(
+          this.templatePath('_app/_frontend/_views/_footer.html'),
+          this.destinationPath('app/frontend/views/footer.html'), {
+            appName: this.appName,
+            appAuthor: this.appAuthor
+          }
+      );
     }
   },
 

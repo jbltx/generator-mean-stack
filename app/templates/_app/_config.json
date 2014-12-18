@@ -13,8 +13,8 @@
 		"name": "test",
 		"host": "localhost",
 		"port": 27017,
-		"user": "admin",
-		"password": "password"
+		"user": "",
+		"password": ""
 	},
 	"mail": {
 		"service": "Gmail",
