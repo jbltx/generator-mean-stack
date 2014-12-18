@@ -3,7 +3,7 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var router = express.Router();
-var Model= mongoose.model('Model');
+var Model= mongoose.model('Task');
 
 module.exports = function (isLoggedIn) {
 

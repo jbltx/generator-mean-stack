@@ -10,11 +10,11 @@
 	"cookieSecret": "cookieSecret",
 	"sessionSecret": "sessionSecret",
 	"database": {
-		"name": "dbname",
+		"name": "test",
 		"host": "localhost",
-		"port": 51980,
-		"user": "dbusername",
-		"password": "dbpassword"
+		"port": 27017,
+		"user": "admin",
+		"password": "password"
 	},
 	"mail": {
 		"service": "Gmail",
