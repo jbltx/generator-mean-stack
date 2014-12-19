@@ -1,0 +1,28 @@
+.admin {
+
+}
+
+.admin .tasks-table {
+	width: 100%;
+	min-width: 200px;
+	margin: auto;
+	text-align: left;
+}
+
+.admin .tasks-table tr td, .admin .tasks-table tr th {
+	padding:10px;
+	border: 1px solid #000;
+}
+
+.admin .tasks-table tr .actions-col {
+	width: 100px;
+}
+
+.actions-col i {
+	font-size: 26px;
+}
+
+.actions-col i:hover {
+	cursor: pointer;
+	color: #17baef;
+}

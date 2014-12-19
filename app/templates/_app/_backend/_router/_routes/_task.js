@@ -8,12 +8,12 @@ var Model= mongoose.model('Task');
 module.exports = function (isLoggedIn) {
 
 	router.get('/', isLoggedIn, function (req, res) {
-		Model.listAll(req.user, function (err, data) {
+		Model.find(function (err, data) {
 			if (err) {
 				return res.status(500).send(err);
 			}
 			if (data.length === 0) {
-				return res.status(404).end();
+				return res.send('0');
 			}
 			return res.status(200).send(data);
 		});

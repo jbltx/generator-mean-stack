@@ -1,1 +1,33 @@
-<p>Admin</p>
+<section id="admin" class="admin section offset-header">
+	<div class="container text-center">
+		<h1>Admin Section</h1>
+		<p>Hello {{currentUser.fullname}} ! You are in admin section ('/admin') which means you are currently logged in. Congratulation !</p>
+		<p>This section can only be seen by users registered in MongoDB. To get informations about the current user in Angular, just use the variable $rootScope.currentUser.</p>
+		<p><strong>Example with the fullname :</strong> $rootScope.currentUser.fullname = {{currentUser.fullname}}.</p>
+		<p>To just know if the user is logged in or not, you can use $rootScope.isSignedIn variable.</p>
+		<br/>
+		<h2>Example of CRUD service</h2>
+		<p>AngularJS can talk with ExpressJS like a CRUD service (Create, Read, Update, Delete). Angular sends requests to Express and Mongoose will interact with the database. This is an example with some tasks.</p>
+		<br />
+		<table class="tasks-table">
+			<caption>Tasks</caption>
+			<tr>
+				<th>Name</th>
+				<th class="actions-col">Actions</th>
+			</tr>
+			<tr ng-repeat="task in tasks">
+				<td>{{task.name}}</i></td>
+				<td class="actions-col">
+					<i class="fa fa-edit" ng-click="edit(task._id, task.name)"></i> &nbsp;
+					<i class="fa fa-remove" ng-click="delete(task._id)"></i>
+				</td>
+			</tr>
+		</table>
+		<p style="text-align:right">
+			<button class="btn btn-primary" style="width:100px" ng-click="create()"><i class="fa fa-plus"> New Task</i></button>
+		</p>
+			
+		<p style="color:red">{{errorMessage}}</p>
+		<p><strong>NB: $http requests are made with CSRF protection. To more, some requests needs to be logged in to get their results.</strong></p>
+	</div>
+</section>

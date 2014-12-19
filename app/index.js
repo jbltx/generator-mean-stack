@@ -138,6 +138,7 @@ module.exports = yeoman.generators.Base.extend({
     	this.copy('_app/_frontend/_css/_styles.scss','app/frontend/css/styles.scss');
     	this.copy('_app/_frontend/_css/_variables.scss','app/frontend/css/_variables.scss');
     	this.copy('_app/_frontend/_css/_partials/_main.scss','app/frontend/css/partials/_main.scss');
+      this.copy('_app/_frontend/_css/_partials/_admin.scss','app/frontend/css/partials/_admin.scss');
     	this.copy('_app/_frontend/_img/_meanstack.svg','app/frontend/img/meanstack.svg');
     	this.copy('_app/_frontend/_img/_angularjs.png','app/frontend/img/angularjs.png');
     	this.copy('_app/_frontend/_img/_express.png','app/frontend/img/express.png');
