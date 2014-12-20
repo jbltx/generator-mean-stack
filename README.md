@@ -36,9 +36,9 @@ Scaffold a new MEAN stack project `yo mean-stack`
 Available generators:
 
 - [mean-stack (or mean-stack:app)](#app)
-- mean-stack:backendRoute (soon)
-- mean-stack:backendModel (soon)
-- mean-stack:frontendRoute (soon)
+- [mean-stack:bRoute](#broute) 
+- [mean-stack:bModel](#bmodel) (coming soon)
+- mean-stack:fRoute (coming soon)
 
 **Note: Generators are to be run from the app root directory**
 
@@ -50,6 +50,38 @@ Example:
 
 ```
 yo mean-stack
+```
+
+### bRoute
+
+Sets up a new route in Express router (located in `app/backend/router/routes` dir).
+
+You can choose if the route has a restricted access (only for users) and if you want a ready CRUD template.
+
+Example:
+
+```
+yo mean-stack:bRoute
+```
+
+**Note: CRUD will create a route AND start the bModel sub-generator to set up a new Mongoose model**
+
+If you want to skip bModel generator, use the `--skip-model` option.
+
+```
+yo mean-stack:bRoute --skip-model
+```
+
+### bModel
+
+Create a new Mongoose model (located in `app/backend/models` dir).
+
+**Suggestion: If you have to make a new route too, use `yo mean-stack:bRoute` instead**
+
+Example:
+
+```
+yo mean-stack:bModel
 ```
 
 ## Serve and build

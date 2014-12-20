@@ -1,9 +1,12 @@
 'use strict';
 
 
-var mongoose = require('mongoose');
-var User = mongoose.model('User');
-var Remember = mongoose.model('Remember');
+var mongoose 		= require('mongoose');
+var User 			= mongoose.model('User');
+var Remember 		= mongoose.model('Remember');
+var path            = require('path');
+var fs 				= require('fs');
+var routesDir		= fs.readdirSync(path.join(__dirname, './routes'));
 
 
 var isLoggedIn = function (req, res, next) {
@@ -18,7 +21,13 @@ var isLoggedIn = function (req, res, next) {
 
 module.exports = function (app, passport) {
 
-	app.use('/task', require('./routes/task')(isLoggedIn));
+
+	routesDir.forEach(function (filename) {
+		if (filename.indexOf('.js') >-1) {
+			var routename = filename.substr(0, filename.length-3);
+			app.use('/'+routename, require('./routes/'+routename)(isLoggedIn));
+		}
+	});
 	
 	app.post('/signup', passport.authenticate('local-signup', {failureFlash : true}), function (req, res) {
 		res.send(req.user);

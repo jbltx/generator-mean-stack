@@ -36,7 +36,7 @@ require('./lib/database');
 *
 */
 modelsDir.forEach(function (file) {
-	if (file.indexOf('.js')) {
+	if (file.indexOf('.js') >-1) {
 		require('./models/' + file);
 	}
 });
