@@ -11,25 +11,53 @@
 
 ## Introduction
 
-MEAN stack defines application using MongoDB, ExpressJS, AngularJS and NodeJS for a full Javascript development.
+MEAN stack defines application using MongoDB, ExpressJS, AngularJS and NodeJS for a full Javascript development. This generator will help you to start with a solid base, which permits you to code faster. Some usual tasks are handled in sub-generators too.
 
-## Features
+## Prerequisites
 
-- A MEAN stack app scaffold with HTML5 / CSS3 support
-- Sub-generators (coming soon) to create backend routes, models, and frontend routes
-- Mail sender support to generate strong authentication with email confirmation
-- Already configured CSRF protection for all HTTP requests
-- Built-in authentication service using PassportJS with different strategies (cookie-based)
-- Support for SASS/SCSS and Autoprefixer
-- Many extra features during installation (Bootstrap, Font Awesome, ...)
+To use the generator, you need some prerequisites :
+
+- **[Node.js with NPM](http://www.nodejs.org/download/) **
+- **[MongoDB](http://www.mongodb.org/)** (only needed if you want to use a local database, you could use a MongoDB web service like [Mongolab](https://mongolab.com/) too, but for development purpose it could be useful to have a local database)
+- **[Yo](http://yeoman.io/)** - This package manage all Yeoman's generators 
+
+```
+$ npm install -g yo
+```
+
+- **[Bower](http://bower.io/)** - Bower will manage your frontend dependencies
+
+```
+$ npm install -g bower
+```
+
+- **[Grunt](http://gruntjs.com/)** - Grunt will automate some tasks to build your app or check if there's no error in your code.
+
+```
+$ npm install -g grunt-cli
+```
+
+Please make sure to read the documentation of these packages before starting your MEAN project. You also need to know basics about [Express](http://expressjs.com/), [AngularJS](https://angularjs.org/), [Mongoose](http://mongoosejs.com/docs/guide.html) and [Passport](http://passportjs.org/).
 
 ## Installation
 
-Install the generator `npm install -g generator-mean-stack`
+Install the generator 
 
-Make a new directory and cd into it `mkdir -p mean-project && cd $_`
+```
+$ npm install -g generator-mean-stack
+```
 
-Scaffold a new MEAN stack project `yo mean-stack`
+Make a new directory and cd into it 
+
+```
+$ mkdir -p mean-project && cd $_
+```
+
+Scaffold a new MEAN stack project 
+
+```
+yo mean-stack
+```
 
 ## Generators
 
@@ -49,7 +77,7 @@ Sets up a new MEAN stack app, generating all the boilerplate you need to get sta
 Example: 
 
 ```
-yo mean-stack
+$ yo mean-stack
 ```
 
 ### bRoute
@@ -61,7 +89,7 @@ You can choose if the route has a restricted access (only for users) and if you 
 Example:
 
 ```
-yo mean-stack:bRoute
+$ yo mean-stack:bRoute
 ```
 
 **Note: CRUD will create a route AND start the bModel sub-generator to set up a new Mongoose model**
@@ -69,7 +97,7 @@ yo mean-stack:bRoute
 If you want to skip bModel generator, use the `--skip-model` option.
 
 ```
-yo mean-stack:bRoute --skip-model
+$ yo mean-stack:bRoute --skip-model
 ```
 
 ### bModel
@@ -81,7 +109,7 @@ Create a new Mongoose model (located in `app/backend/models` dir).
 Example:
 
 ```
-yo mean-stack:bModel
+$ yo mean-stack:bModel
 ```
 
 ## Serve and build
@@ -91,13 +119,13 @@ The generator makes a gruntfile configuration, so building your app becomes easy
 Build a fresh new distribution :
 
 ```
-grunt
+$ grunt
 ```
 
 Run the app server in development mode :
 
 ```
-grunt serve
+$ grunt serve
 ```
 
 You can define a `production` target to serve in production mode :
@@ -106,7 +134,35 @@ You can define a `production` target to serve in production mode :
 grunt serve:production
 ```
 
-**NB: this last command build automatically a new distribution before serving.**
+**Note: this last command builds automatically a new distribution before serving.**
+
+## Deployment
+
+Make sure to test your final distribution with Grunt :
+
+```
+$ grunt serve:production
+```
+
+The final distribution is located in `/build` directory.
+
+```
+$ cd build
+```
+
+Everything you need is here, you can init a git repo here and push your build :
+
+```
+git init && git remote add origin pathToYourProductionServer && git commit -am "Build 1.0.0" && git push origin master
+```
+
+**Note: Make sure to configure your .gitignore file inside /build directory to match with your production server specifications.**
+
+**Note2: .git folder and .gitignore file won't be overwritten during new build, but you can add other files too in Gruntfile.js configuration.**
+
+## MEAN-Stack Example
+
+Coming soon...
 
 ## License
 

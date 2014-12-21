@@ -1,0 +1,22 @@
+{
+	"name": "<%= appName %>",
+	"version": "<%= pkgVersion %>",
+	"dependencies": {
+		"angular": "~1.3.6",
+	    "angular-bootstrap": "~0.12.0",
+	    "jquery": "~2.1.1",
+	    "components-font-awesome": "~4.2.0",
+	    "bootstrap": "~3.3.1",
+	    "bootstrap-sass-official": "~3.1.1",
+	    "angular-route": "~1.3.6",
+	    "json3": "~3.3.2",<% if(filters.ngResource) { %>
+	    "angular-resource": "~1.2.*",<% } %><% if(filters.ngCookies) { %>
+	    "angular-cookies": ">=1.2.*",<% } %><% if(filters.ngSanitize) { %>
+	    "angular-sanitize": ">=1.2.*",<% } %><% if(filters.lodash) { %>
+	    "lodash": "~2.4.1",<% } %><% if(filters.uiRouter) { %>
+	    "angular-ui-router": "~0.2.10",<% } %><% if(filters.hammer) { %>
+	    "ryanmullins-angular-hammer": "~2.1.2",<% } %><% if(filters.mdi) { %>
+	    "material-design-icons": "~1.0.1",<% } %>
+	    "es5-shim": "~4.0.5"
+	}
+}
