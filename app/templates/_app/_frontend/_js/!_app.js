@@ -1,6 +1,12 @@
 'use strict';
 
-var app = angular.module('<%= appName %>', ['ngRoute','ui.bootstrap']);
+var app = angular.module('<%= appName %>', [
+  'ngRoute',<% if(filters.ngResource) { %>
+  'ngResource',<% } %><% if(filters.ngCookies) { %>
+  'ngCookies',<% } %><% if(filters.ngSanitize) { %>
+  'ngSanitize',<% } %>
+  'ui.bootstrap'
+]);
 
 
 app.config([

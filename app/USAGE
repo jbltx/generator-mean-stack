@@ -1,0 +1,5 @@
+Description:
+    Creates a MEAN-stack app
+
+Example:
+    yo mean-stack

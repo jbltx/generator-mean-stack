@@ -1,210 +1,268 @@
 'use strict';
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
+var fs = require('fs');
 
+var leaveFile = function (fileArray, file) {
+	var gFile = fileArray.indexOf(file);
+	while (gFile !== -1) {
+		fileArray.splice(gFile, 1);
+		gFile = fileArray.indexOf(file);
+	}
+}
+	
 module.exports = yeoman.generators.Base.extend({
+
+
   initializing: function () {
     this.pkg = require('../package.json');
+    this.argument('name', { type: String, required: false });
+    this.appname = this.name ||this.appname;
+    this.appname = this._.camelize(this._.slugify(this._.humanize(this.appname)));
+
+    this.filters = {};
+
+    this.log(chalk.yellow.bold('\nWelcome to Mean-Stack generator !\nLet me ask you some questions...\n'));
+
   },
 
-  prompting: function () {
-    var done = this.async();
+  prompting: {
 
-	this.log('\n\n\n\n\n');
-	this.log('███╗   ███╗███████╗ █████╗ ███╗   ██╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗');
-	this.log('████╗ ████║██╔════╝██╔══██╗████╗  ██║    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝');
-	this.log('██╔████╔██║█████╗  ███████║██╔██╗ ██║    ███████╗   ██║   ███████║██║     █████╔╝ ');
-	this.log('██║╚██╔╝██║██╔══╝  ██╔══██║██║╚██╗██║    ╚════██║   ██║   ██╔══██║██║     ██╔═██╗ ');
-	this.log('██║ ╚═╝ ██║███████╗██║  ██║██║ ╚████║    ███████║   ██║   ██║  ██║╚██████╗██║  ██╗');
-	this.log('╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝    ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝');
-	this.log('Thank you for using generator-meanstack. This node package will help you to generate');
-	this.log('a full MEAN (MongoDB, ExpressJS, AngularJS, NodeJS) stack application, ready to use.');
+      appPrompt: function () {
 
-    var prompts = [{
-    	type: 'input',
-    	name: 'appName',
-    	message: 'What is the name of your application ?',
-    	default: this.appname
-    },
-    {
-    	type: 'input',
-    	name: 'appDescription',
-    	message: 'A little description ?'
-    },
-    {
-    	type: 'input',
-    	name: 'pkgVersion',
-    	message: 'What is the version of your appllication ?',
-    	default: '0.0.0'
-    },
-    {
-    	type: 'input',
-    	name: 'appAuthor',
-    	message: 'And, who are you ?',
-    	default: 'Simon Baker <simon.baker@hostname.com>'
-    },
-    {
-    	type: 'input',
-    	name: 'appRepo',
-    	message: 'The application repository ?',
-    	default: 'https://github.com/user/'+this.appname+'.git'
-    }];
-    this.prompt(prompts, function (props) {
-      this.appName = props.appName;
-      this.pkgVersion = props.pkgVersion;
-      this.appAuthor = props.appAuthor;
-      this.appRepo = props.appRepo;
-      this.appDescription = props.appDescription;
 
-      done();
-    }.bind(this));
+        var done = this.async();
+
+        var prompts = [];
+
+
+        if(!this.name) {
+
+          prompts.push({
+            type: 'input',
+            name: 'appName',
+            message: 'What is the name of your application ?',
+            default: this.appname
+          });
+
+        }
+
+    
+        prompts.push({
+          type: 'input',
+          name: 'appDescription',
+          message: 'A little description ?'
+        },
+        {
+          type: 'input',
+          name: 'pkgVersion',
+          message: 'What is the version of your appllication ?',
+          default: '0.0.0'
+        },
+        {
+          type: 'input',
+          name: 'appAuthor',
+          message: 'And, who are you ?',
+          default: 'Simon Baker <simon.baker@hostname.com>'
+        },
+        {
+          type: 'input',
+          name: 'appRepo',
+          message: 'The application repository ?',
+          default: 'https://github.com/user/'+this.appname+'.git'
+        });
+
+
+        this.prompt(prompts, function (answers) {
+          this.appName = answers.appName || this.name;
+          this.pkgVersion = answers.pkgVersion;
+          this.appAuthor = answers.appAuthor;
+          this.appRepo = answers.appRepo;
+          this.appDescription = answers.appDescription;
+
+          done();
+        }.bind(this));
+
+
+      },
+
+
+      backendPrompt: function () {
+
+
+        var done = this.async();
+
+        this.prompt([/*{
+          type: 'checkbox',
+          name: 'oauth',
+          message: 'Mongoose provides a local strategy by default. Please choose others needed strategies :',
+          choices: ['Google','Facebook','Twitter','LinkedIn', 'Github']
+        },*/{
+          type: 'confirm',
+          name: 'nodemailer',
+          message: 'Do you want to use nodemailer ? (To send emails to new users, etc...)',
+          default: true
+        }], function (answers) {
+
+          this.filters.mail = answers.nodemailer;
+	      if(answers.oauth) {
+			if(answers.oauth.length) this.filters.oauth = true;
+		    answers.oauth.forEach(function(oauthStrategy) {
+			  this.filters[oauthStrategy] = true;
+		    }.bind(this));
+		  }
+
+          done();
+
+        }.bind(this));
+
+
+      },
+
+      
+      frontendPrompt: function () {
+
+
+        var done = this.async();
+
+
+        this.prompt([{
+          type: 'checkbox',
+          name: 'frontendGoodies',
+          message: 'The generator will set up some standard components (jQuery, Bootstrap, ngRoute, Font Awesome, ...)\n'+
+                   'Choose your extra components for the frontend :',
+          choices: [{
+            value: 'sass',
+            name: 'SASS / SCSS support',
+            checked: true
+          }, {
+            value: 'ngResource',
+            name: 'Angular Resource'
+          }, {
+            value: 'ngCookies',
+            name: 'Angular Cookies'
+          }, {
+            value: 'ngSanitize',
+            name: 'Angular Sanitize'
+          }, {
+            value: 'lodash',
+            name: 'lodash'
+          }, {
+            value: 'uiRouter',
+            name: 'Angular UI Router'
+          }]
+        }], function (answers) {
+            
+            if(answers.frontendGoodies) {
+		        if(answers.frontendGoodies.length) this.filters.goodies = true;
+		        answers.frontendGoodies.forEach(function(goodie) {
+		          this.filters[goodie] = true;
+		        }.bind(this));
+		    }
+
+            done();
+
+        }.bind(this));
+
+
+      }
+      
+        
   },
 
   writing: {
-  	scaffoldDirs: function () {
-  		this.mkdir('build');
-  		this.mkdir('app');
-  		this.mkdir('app/backend');
-  		this.mkdir('app/backend/models');
-  		this.mkdir('app/backend/lib');
-  		this.mkdir('app/backend/templates');
-  		this.mkdir('app/backend/router');
-  		this.mkdir('app/backend/router/routes');
-  		this.mkdir('app/frontend');
-  		this.mkdir('app/frontend/js');
-  		this.mkdir('app/frontend/js/controllers');
-  		this.mkdir('app/frontend/js/services');
-  		this.mkdir('app/frontend/css');
-  		this.mkdir('app/frontend/css/partials');
-  		this.mkdir('app/frontend/img');
-  		this.mkdir('app/frontend/fonts');
-  		this.mkdir('app/frontend/views');
-  	},
-  	projectfiles: function () {
-    	this.copy('_Gruntfile.js','Gruntfile.js');
-      	this.fs.copyTpl(
-      		this.templatePath('_package.json'),
-      		this.destinationPath('package.json'), {
-      			appName: this.appName,
-      			pkgVersion: this.pkgVersion,
-      			appAuthor: this.appAuthor,
-      			appRepo: this.appRepo,
-      			appDescription: this.appDescription
-      	});
-		this.fs.copyTpl(
-			this.templatePath('_bower.json'),
-			this.destinationPath('bower.json'), {
-				appName: this.appName,
-				pkgVersion: this.pkgVersion
-		});
-		this.copy('jshintrc','.jshintrc');
-		this.copy('gitignore','.gitignore');
+
+
+    generateProject: function () {
+
+      this.log(JSON.stringify(this.filters, null, 4));
+
+      var self = this;
+      var files = this.expandFiles('**',{dot: true, cwd: this.sourceRoot()});
+      var src, dest, filteredPath;
+
+      if(this.filters.sass) {
+      	leaveFile(files, '_app/_frontent/_css/_styles.css');
+      } else {
+      	leaveFile(files, '_app/_frontend/_css/_styles.scss');
+      	leaveFile(files, '_app/_frontend/_css/_--variables.scss');
+      	leaveFile(files, '_app/_frontend/_css/_partials/_--main.scss');
+      	leaveFile(files, '_app/_frontend/_css/_partials/_--admin.scss');
+      }
+
+      if(!this.filters.mail) {
+      	leaveFile(files, '_app/_backend/_templates/_confirm-mail.js');
+      	leaveFile(files, '_app/_backend/_templates/_theft-mail.js');
+      }
+
+      files.forEach(function (f) {
+
+     
+        src = self.templatePath(f);
+        filteredPath = f.replace(/_/g, '');
+        filteredPath = filteredPath.replace(/--/g, '_');
+
+        if (filteredPath.indexOf('!') > -1) {
+
+          filteredPath = filteredPath.replace('!', '');
+          dest = self.destinationPath(filteredPath);          
+
+          
+          self.fs.copyTpl(src, dest, {
+              appName: self.appName,
+              pkgVersion: self.pkgVersion,
+              appAuthor: self.appAuthor,
+              appRepo: self.appRepo,
+              appDescription: self.appDescription,
+              filters: self.filters,
+              dirs: { 
+              	app: '<%= dirs.app %>',
+              	build: '<%= dirs.build %>'
+              }
+          });
+          
+
+        }
+        else {
+
+          dest = self.destinationPath(filteredPath);
+
+          self.copy(src, dest);
+
+        }
+ 
+      });
     },
-    app: function () {
-      	this.copy('_app/_server.js','app/server.js');
-      	this.copy('_app/_config.json','app/config.json');
-    },
-    backend: function () {
-    	this.copy('_app/_backend/_app.js','app/backend/app.js');
-    	this.copy('_app/_backend/_lib/_database.js','app/backend/lib/database.js');
-    	this.copy('_app/_backend/_lib/_strategies.js','app/backend/lib/strategies.js');
-    	this.copy('_app/_backend/_models/_task.js','app/backend/models/task.js');
-    	this.copy('_app/_backend/_models/_user.js','app/backend/models/user.js');
-      this.copy('_app/_backend/_models/_remember.js','app/backend/models/remember.js');
-    	this.copy('_app/_backend/_router/_index.js','app/backend/router/index.js');
-      this.copy('_app/_backend/_router/_routes/_task.js','app/backend/router/routes/task.js');
-      this.fs.copyTpl( 
-        	this.templatePath('_app/_backend/_templates/_confirm-mail.js'),
-        	this.destinationPath('app/backend/templates/confirm-mail.js'),{
-        		appName: this.appName
-        	}
-      );
-      this.fs.copyTpl(
-        	this.templatePath('_app/_backend/_templates/_theft-mail.js'),
-        	this.destinationPath('app/backend/templates/theft-mail.js'), {
-        		appName: this.appName
-        	}
-      );
-    },
-    frontend: function () {
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_index.html'), 
-    		this.destinationPath('app/frontend/index.html'), {
-    			appName: this.appName,
-    			appDescription: this.appDescription
-    	});
-    	this.copy('_app/_frontend/_robots.txt','app/frontend/robots.txt');
-    	this.copy('_app/_frontend/favicon.ico','app/frontend/favicon.ico');
-    	this.copy('_app/_frontend/_css/_styles.scss','app/frontend/css/styles.scss');
-    	this.copy('_app/_frontend/_css/_variables.scss','app/frontend/css/_variables.scss');
-    	this.copy('_app/_frontend/_css/_partials/_main.scss','app/frontend/css/partials/_main.scss');
-      this.copy('_app/_frontend/_css/_partials/_admin.scss','app/frontend/css/partials/_admin.scss');
-    	this.copy('_app/_frontend/_img/_meanstack.svg','app/frontend/img/meanstack.svg');
-    	this.copy('_app/_frontend/_img/_yeoman.png','app/frontend/img/yeoman.png');
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_js/_app.js'), 
-    		this.destinationPath('app/frontend/js/app.js'), {
-    			appName: this.appName
-    	});
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_js/_controllers/_admin.js'), 
-    		this.destinationPath('app/frontend/js/controllers/admin.js'), {
-    			appName: this.appName
-    	});
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_js/_controllers/_404.js'), 
-    		this.destinationPath('app/frontend/js/controllers/404.js'), {
-    			appName: this.appName
-    	});
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_js/_controllers/_main.js'), 
-    		this.destinationPath('app/frontend/js/controllers/main.js'), {
-    			appName: this.appName
-    	});
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_js/_controllers/_auth.js'), 
-    		this.destinationPath('app/frontend/js/controllers/auth.js'), {
-    			appName: this.appName
-    	});
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_js/_services/_interceptors.js'), 
-    		this.destinationPath('app/frontend/js/services/interceptors.js'), {
-    			appName: this.appName
-    	});
-    	this.fs.copyTpl(
-    		this.templatePath('_app/_frontend/_js/_services/_auth.js'), 
-    		this.destinationPath('app/frontend/js/services/auth.js'), {
-    			appName: this.appName
-    	});
-    	this.copy('_app/_frontend/_views/_main.html','app/frontend/views/main.html');
-    	this.copy('_app/_frontend/_views/_404.html','app/frontend/views/404.html');
-    	this.copy('_app/_frontend/_views/_admin.html','app/frontend/views/admin.html');
-      this.fs.copyTpl(
-          this.templatePath('_app/_frontend/_views/_header.html'),
-          this.destinationPath('app/frontend/views/header.html'), {
-            appName: this.appName
-          }
-      );
-      this.fs.copyTpl(
-          this.templatePath('_app/_frontend/_views/_footer.html'),
-          this.destinationPath('app/frontend/views/footer.html'), {
-            appName: this.appName,
-            appAuthor: this.appAuthor
-          }
-      );
+
+    emptyDir: function () {
+
+    	if (!this.filters.sass) {
+    		this.fs.delete(this.destinationPath('app/frontend/css/partials'));
+    	}
+
+    	if (!this.filters.mail) {
+    		this.fs.delete(this.destinationPath('app/backend/templates'));
+    	}
+
     }
+
+
   },
 
+
   install: function () {
+
     this.installDependencies({
       skipInstall: this.options['skip-install']
     });
+
   },
 
+
   end: function () {
-  	this.log(
-  		'Installation done. \nDon\'t forget to configure your app (edit '+
-  		chalk.green.bold('/app/config.json')+')'
-  	);
+
+  	this.log(chalk.green.bold('\n\nInstallation done. \nDon\'t forget to configure your app (edit /app/config.json)'));
   }
+
+
 });

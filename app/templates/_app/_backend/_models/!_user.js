@@ -6,9 +6,9 @@ var bcrypt 		= require('bcrypt-nodejs');
 var userSchema 	= mongoose.Schema({
     fullname: {type: String},
 	email: {type: String, required: true},
-	password: {type: String, required: true},
+	password: {type: String, required: true},<% if(filters.mail) { %>
 	emailConfirm: Boolean,
-	emailKey: String,
+	emailKey: String,<% } %>
 	sessioncache: String
 });
 

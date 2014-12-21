@@ -1,0 +1,70 @@
+{
+	"development": {
+
+		"host": "localhost",
+
+		"port": 8080,
+
+		"cookieSecret": "cookieSecret",
+
+		"sessionSecret": "sessionSecret",
+
+		"database": {
+
+			"name": "test",
+
+			"host": "localhost",
+
+			"port": 27017,
+
+			"user": "",
+
+			"password": ""
+		}<% if(filters.mail) { %>,
+
+		"mail": {
+
+			"service": "Gmail",
+
+			"auth": {
+				"user": "guser@gmail.com",
+				"pass": "gpassword"
+			}
+		}<% } %>
+	},
+
+
+	"production": {
+
+		"host": "localhost",
+
+		"port": 8080,
+
+		"cookieSecret": "cookieSecret",
+
+		"sessionSecret": "sessionSecret",
+
+		"database": {
+
+			"name": "test",
+
+			"host": "localhost",
+
+			"port": 27017,
+
+			"user": "",
+
+			"password": ""
+		}<% if(filters.mail) { %>,
+
+		"mail": {
+
+			"service": "Gmail",
+
+			"auth": {
+				"user": "guser@gmail.com",
+				"pass": "gpassword"
+			}
+		}<% } %>
+	}
+}

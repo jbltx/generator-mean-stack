@@ -11,8 +11,10 @@ angular.module('<%= appName %>')
 					$timeout(function () { deferred.reject(); }, 0);
 					$window.location.href='/admin';
 				})
-				.error(function (err) {
-					console.log(err);
+				.error(function (err, status) {
+					if (err && status === 401) {
+						document.cookie = 'remember=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+					}
 					$timeout(deferred.resolve, 0 );
 				});
 			} 
