@@ -17,7 +17,7 @@ MEAN stack defines application using MongoDB, ExpressJS, AngularJS and NodeJS fo
 
 To use the generator, you need some prerequisites :
 
-- **[Node.js with NPM](http://www.nodejs.org/download/) **
+- **[Node.js with NPM](http://www.nodejs.org/download/)**
 - **[MongoDB](http://www.mongodb.org/)** (only needed if you want to use a local database, you could use a MongoDB web service like [Mongolab](https://mongolab.com/) too, but for development purpose it could be useful to have a local database)
 - **[Yo](http://yeoman.io/)** - This package manage all Yeoman's generators 
 

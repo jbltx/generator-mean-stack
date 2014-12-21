@@ -1,5 +1,5 @@
 /**
- * /server.js
+ * server.js
  * This file contains the Node server instance. Frontend routes are also set up here.
  *
  */
@@ -67,5 +67,5 @@ else {
 
 // All configuration is done, gonna listen to hostname:port...
 app.listen(app.get('port'), app.get('host'), function (){
-	console.log('Server running at '+app.get('host')+':'+app.get('port'));
+	console.log('Server in '+app.get('env')+' environment running at '+app.get('host')+':'+app.get('port'));
 });

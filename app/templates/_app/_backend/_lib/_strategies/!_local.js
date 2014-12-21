@@ -6,7 +6,7 @@ var User 			= mongoose.model('User');
 var Remember		= mongoose.model('Remember');
 
 
-module.exports = function (passport, transporter) {
+module.exports = function (passport <% if(filters.mail) { %>, transporter<% } %>) {
 	passport.serializeUser(function(user, done) {
 		done(null, user._id);
 	});
@@ -39,22 +39,25 @@ module.exports = function (passport, transporter) {
 					return done(null, false, req.flash('signupMessage', 'email already there'));
 				}
 				else {
-					var validMailKey = Math.random().toString(36).substring(2,10);
+					<% if(filters.mail) { %>var validMailKey = Math.random().toString(36).substring(2,10);<% } %>
 					var newUser = new User();
 					newUser.fullname = req.body.fullname;
 					newUser.email = email;
 					newUser.password = newUser.generateHash(password);
-					newUser.emailConfirm = false;
-					newUser.emailKey = validMailKey;
+					<% if(filters.mail) { %>newUser.emailConfirm = false;<% } %>
+					<% if(filters.mail) { %>newUser.emailKey = validMailKey;<% } %>
 					newUser.save(function (err) {
 						if (err) { throw err; }
+						<% if(filters.mail) { %>
 						var mailOptions = require('../templates/confirm-mail')(email, req.body.fullname, validMailKey);
 						transporter.sendMail(mailOptions, function(error, info) {
 							if (error) { console.log(error); }
 							console.log(info.response);
 							return done(null, newUser);	
 						});
-									
+						<% } else { %>
+						return done(null, newUser);
+						<% } %>			
 					});
 				}
 			});
@@ -94,34 +97,87 @@ module.exports = function (passport, transporter) {
 				Remember
 					.findOne({login: cookieLogin, serial_id: cookieId})
 					.exec(function (err, endToken) {
-						if (err) {return done(err);}
-						if (endToken.token !== cookieToken) {
-							var mailOptions = require('../templates/theft-mail')(cookieLogin);
-							transporter.sendMail(mailOptions, function (err, info) {
-								if (err) {console.log(err);}
-								console.log(info.response);
-							});
+
+						if (err) {
+
+							return done(err);
+
+						}
+
+						if(!endToken) {
+
+							return done(null, null);
+
+						}
+
+						if(endToken && endToken.token !== cookieToken) {
+
 							endToken.remove(function (err) {
-								if (err) {return done(err);}
-								return done(null, false, req.flash('signInMessage', 'theft tentative detected.'));
-						 	});
-						}
-						else {
-							newEndToken(cookieLogin, cookieId, function (err) {
-								if (err) {return done(err);}
-								endToken.remove(function (err) {
-									if (err) {return done(err);}
-									User.findOne({email: cookieLogin}).exec(function (err, user) {
-										if (err) {return done(err);}
-										return done(null, user);
-									});
+
+								if (err) {
+
+									return done(err);
+
+								}
+
+								<% if(filters.mail) { %>
+
+								var mailOptions = require('../templates/theft-mail')(cookieLogin);
+
+								transporter.sendMail(mailOptions, function (err, info) {
+
+									if (err) {
+										console.log(err);
+									}
+
+									console.log(info.response);
+
 								});
+
+								<% } %>
+								
+								return done(null, false, req.flash('signInMessage', 'theft tentative detected.'));
+
 							});
+							
 						}
+
+						else {
+
+							newEndToken(cookieLogin, cookieId, function (err) {
+
+								if (err) {
+									return done(err);
+								}
+
+								endToken.remove(function (err) {
+
+									if (err) {
+										return done(err);
+									}
+
+									User.findOne({email: cookieLogin}).exec(function (err, user) {
+										if (err) {
+											return done(err);
+										}
+
+										return done(null, user);
+
+									});
+
+								});
+
+							});
+
+						}
+
 					});
 			} 
+
 			else {
+
 				return done(null, null);
+
 			}
 		}
 	}));

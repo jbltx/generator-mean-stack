@@ -21,15 +21,27 @@ var path            = require('path');
 var csrf 			= require('csurf');
 var fs 				= require('fs');
 var config 			= JSON.parse(fs.readFileSync(path.join(__dirname, '../config.json'), 'utf8'));
-var modelsDir		= fs.readdirSync(path.join(__dirname, './models'));
-var nodemailer 		= require('nodemailer');
-var transporter 	= nodemailer.createTransport(config.mail);
+var strategiesDir 	= fs.readdirSync(path.join(__dirname, './lib/strategies'));
+var modelsDir		= fs.readdirSync(path.join(__dirname, './models'));<% if(filters.mail) { %>
+var nodemailer 		= require('nodemailer');<% } %>
+
+/**
+* Check environment configuration
+*
+*/
+app.set('env', app.get('env') || 'production');
+<% if(filters.mail) { %>
+/**
+* Configure mail service
+*
+*/
+var transporter = nodemailer.createTransport(config[app.get('env')].mail);<% } %>
 
 /**
 * MongoDB connection.
 *
 */
-require('./lib/database');
+require('./lib/database')(app.get('env'));
 
 /**
 * Inject all javascript files contained in 'models' directory.
@@ -45,15 +57,32 @@ modelsDir.forEach(function (file) {
 * Configure strategies for Passport.
 *
 */
-require('./lib/strategies')(passport, transporter);
+strategiesDir.forEach(function (file) {
+	if (file.indexOf('.js') >-1) {
+		require('./lib/strategies/'+file)(passport<% if(filters.mail) { %>, transporter<% } %>);
+	}
+});
 
+/**
+* Enable cookie middleware
+*
+*/
+app.use(cookieParser(config[app.get('env')].cookieSecret, { httpOnly: true }));
 
-app.use(cookieParser(config.cookieSecret, { httpOnly: true }));
+/**
+* Enable parser middleware
+*
+*/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+/**
+* Enable session middleware
+*
+*/
 app.use(session({ 
 	name: 'sessionID', 
-	secret: config.sessionSecret, 
+	secret: config[app.get('env')].sessionSecret, 
 	cookie: {
 		path: '/',
 		httpOnly: true,
@@ -64,17 +93,53 @@ app.use(session({
 	resave: false, 
 	saveUninitialized: true 
 }));
+
+/**
+* Enable authentication strategies
+*
+*/
 app.use(passport.initialize());
+
+/**
+* Enable session middleware from passport
+*
+*/
 app.use(passport.session());
+
+/**
+* Enable flash middleware (used to send message from authentication strategies to route callbacks)
+*
+*/
 app.use(flash());
+
+/**
+* Enable CSRF protection
+*
+*/
 app.use(csrf());
+
+/**
+* Create a token called 'XSRF-TOKEN' with value managed by csrf middleware. 
+* Send the token in every request results
+*
+* More info here : http://stackoverflow.com/a/27426757/2904349
+*
+*/
 app.use(function(req, res, next) {
 	res.cookie('XSRF-TOKEN', req.csrfToken());
   	next();
 });
 
-
+/**
+* Set backend router to manage requests
+*
+*/
 require('./router')(app, passport);
 
 
+
+/**
+* Export the configured Express app
+*
+*/
 module.exports = app;

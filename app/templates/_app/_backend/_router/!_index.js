@@ -1,8 +1,8 @@
 'use strict';
 
 
-var mongoose 		= require('mongoose');
-var User 			= mongoose.model('User');
+var mongoose 		= require('mongoose');<% if(filters.mail) { %>
+var User 			= mongoose.model('User');<% } %>
 var Remember 		= mongoose.model('Remember');
 var path            = require('path');
 var fs 				= require('fs');
@@ -11,7 +11,7 @@ var routesDir		= fs.readdirSync(path.join(__dirname, './routes'));
 
 var isLoggedIn = function (req, res, next) {
 	if (!req.isAuthenticated()) {
-		res.send(401);
+		res.sendStatus(401);
 	}
 	else {
 		next();
@@ -50,24 +50,35 @@ module.exports = function (app, passport) {
 
 
 	app.post('/signout', function (req, res) {
-		req.logOut();
-		res.send(200);
+		Remember.findOne({login: req.user.email}, function (err, token) {
+			if (err) {
+				throw err;
+			}
+			if (token) {
+				token.remove(function (err) {
+					if (err) { throw err; }
+				});
+			}
+			req.logOut();
+			res.sendStatus(200);
+		});
 	});
 
+	<% if(filters.mail) { %>
 	app.post('/validate', function (req, res) {
 		User.findOne({ emailKey: req.body.key }, function (err, user) {
-			if (err || !user) { return res.status(404).end(); }
+			if (err || !user) { return res.sendStatus(404); }
 			if (user.emailConfirm === true) {
-				return res.status(403).end();
+				return res.sendStatus(403);
 			}
 			else {
 				User.update({ emailKey: req.body.key }, { emailConfirm: true }, { multi: true }, function (err, nb) {
-					if (err) { return res.statut(404).end(); }
+					if (err) { return res.sendStatus(404); }
 					if (nb === 1) {
-						res.status(200).end();
+						res.sendStatus(200);
 					}
 					else {
-						res.status(500).end();
+						res.sendStatus(500);
 					}
 				});
 			}
@@ -78,18 +89,18 @@ module.exports = function (app, passport) {
 	
 	app.post('/unvalidate', function (req, res) {
 		User.findOne({emailKey: req.body.key, email: req.body.email}, function (err, user) {
-			if (err || !user) { return res.status(404).end(); }
+			if (err || !user) { return res.sendStatus(404); }
 			if (user.emailConfirm === true) {
-				return res.status(403).end();
+				return res.sendStatus(403);
 			}
 			else {
 				User.remove({ _id: user._id}, function (err) {
-					if (err) { return res.status(404).end(); }
-					res.status(200).end();
+					if (err) { return res.sendStatus(404); }
+					res.sendStatus(200);
 				});
 			}
 		});
 	});
-
+	<% } %>
 
 };

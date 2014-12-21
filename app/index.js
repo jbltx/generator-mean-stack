@@ -1,7 +1,16 @@
 'use strict';
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
+var fs = require('fs');
 
+var leaveFile = function (fileArray, file) {
+	var gFile = fileArray.indexOf(file);
+	while (gFile !== -1) {
+		fileArray.splice(gFile, 1);
+		gFile = fileArray.indexOf(file);
+	}
+}
+	
 module.exports = yeoman.generators.Base.extend({
 
 
@@ -13,15 +22,9 @@ module.exports = yeoman.generators.Base.extend({
 
     this.filters = {};
 
+    this.log(chalk.yellow.bold('\nWelcome to Mean-Stack generator !\nLet me ask you some questions...\n'));
+
   },
-
-
-  info: function () {
-    this.log('\n\n\n\n\n');
-    this.log('Thank you for using generator-meanstack. This node package will help you to generate');
-    this.log('a full MEAN (MongoDB, ExpressJS, AngularJS, NodeJS) stack application, ready to use.');
-  },
-
 
   prompting: {
 
@@ -89,26 +92,26 @@ module.exports = yeoman.generators.Base.extend({
 
         var done = this.async();
 
-
-        this.prompt([{
+        this.prompt([/*{
           type: 'checkbox',
           name: 'oauth',
           message: 'Mongoose provides a local strategy by default. Please choose others needed strategies :',
           choices: ['Google','Facebook','Twitter','LinkedIn', 'Github']
-        },{
+        },*/{
           type: 'confirm',
           name: 'nodemailer',
-          message: 'Do you want to set up nodemailer ? (To send registration confirmation emails to new user, etc...)',
+          message: 'Do you want to use nodemailer ? (To send emails to new users, etc...)',
           default: true
         }], function (answers) {
 
           this.filters.mail = answers.nodemailer;
-          if (answers.oauth.length > 0) {
-            this.filters.oauth= true;
-            answers.oauth.forEach(function (o) {
-              this.filters[o] = true;
-            });           
-          }
+	      if(answers.oauth) {
+			if(answers.oauth.length) this.filters.oauth = true;
+		    answers.oauth.forEach(function(oauthStrategy) {
+			  this.filters[oauthStrategy] = true;
+		    }.bind(this));
+		  }
+
           done();
 
         }.bind(this));
@@ -129,40 +132,35 @@ module.exports = yeoman.generators.Base.extend({
           message: 'The generator will set up some standard components (jQuery, Bootstrap, ngRoute, Font Awesome, ...)\n'+
                    'Choose your extra components for the frontend :',
           choices: [{
-            name: 'sass',
-            value: 'SASS / Compass support'
+            value: 'sass',
+            name: 'SASS / SCSS support',
+            checked: true
           }, {
-            name: 'ngResource',
-            value: 'Angular Resource'
+            value: 'ngResource',
+            name: 'Angular Resource'
           }, {
-            name: 'ngCookies',
-            value: 'Angular Cookies'
+            value: 'ngCookies',
+            name: 'Angular Cookies'
           }, {
-            name: 'ngSanitize',
-            value: 'Angular Sanitize'
+            value: 'ngSanitize',
+            name: 'Angular Sanitize'
           }, {
-            name: 'lodash',
-            value: 'lodash'
+            value: 'lodash',
+            name: 'lodash'
           }, {
-            name: 'uiRouter',
-            value: 'Angular UI Router'
-          }, {
-            name: 'hammer',
-            value: 'angular-hammer'
-          }, {
-            name: 'mdi',
-            value: 'Material Design Icons'
+            value: 'uiRouter',
+            name: 'Angular UI Router'
           }]
         }], function (answers) {
-            if(answers.length > 0) {
-              this.filters.goodies = true;
-              answers.frontendGoodies.forEach(function (c) {
-                this.filters[c] = true;
-              });
-            }
+            
+            if(answers.frontendGoodies) {
+		        if(answers.frontendGoodies.length) this.filters.goodies = true;
+		        answers.frontendGoodies.forEach(function(goodie) {
+		          this.filters[goodie] = true;
+		        }.bind(this));
+		    }
 
-
-          done();
+            done();
 
         }.bind(this));
 
@@ -177,12 +175,29 @@ module.exports = yeoman.generators.Base.extend({
 
     generateProject: function () {
 
+      this.log(JSON.stringify(this.filters, null, 4));
+
       var self = this;
       var files = this.expandFiles('**',{dot: true, cwd: this.sourceRoot()});
       var src, dest, filteredPath;
 
+      if(this.filters.sass) {
+      	leaveFile(files, '_app/_frontent/_css/_styles.css');
+      } else {
+      	leaveFile(files, '_app/_frontend/_css/_styles.scss');
+      	leaveFile(files, '_app/_frontend/_css/_--variables.scss');
+      	leaveFile(files, '_app/_frontend/_css/_partials/_--main.scss');
+      	leaveFile(files, '_app/_frontend/_css/_partials/_--admin.scss');
+      }
+
+      if(!this.filters.mail) {
+      	leaveFile(files, '_app/_backend/_templates/_confirm-mail.js');
+      	leaveFile(files, '_app/_backend/_templates/_theft-mail.js');
+      }
+
       files.forEach(function (f) {
-        
+
+     
         src = self.templatePath(f);
         filteredPath = f.replace(/_/g, '');
         filteredPath = filteredPath.replace(/--/g, '_');
@@ -199,7 +214,11 @@ module.exports = yeoman.generators.Base.extend({
               appAuthor: self.appAuthor,
               appRepo: self.appRepo,
               appDescription: self.appDescription,
-              filters: self.filters
+              filters: self.filters,
+              dirs: { 
+              	app: '<%= dirs.app %>',
+              	build: '<%= dirs.build %>'
+              }
           });
           
 
@@ -213,6 +232,18 @@ module.exports = yeoman.generators.Base.extend({
         }
  
       });
+    },
+
+    emptyDir: function () {
+
+    	if (!this.filters.sass) {
+    		this.fs.delete(this.destinationPath('app/frontend/css/partials'));
+    	}
+
+    	if (!this.filters.mail) {
+    		this.fs.delete(this.destinationPath('app/backend/templates'));
+    	}
+
     }
 
 
@@ -230,11 +261,7 @@ module.exports = yeoman.generators.Base.extend({
 
   end: function () {
 
-  	this.log(
-  		'Installation done. \nDon\'t forget to configure your app (edit '+
-  		chalk.green.bold('/app/config.json')+')'
-  	);
-
+  	this.log(chalk.green.bold('\n\nInstallation done. \nDon\'t forget to configure your app (edit /app/config.json)'));
   }
 
 

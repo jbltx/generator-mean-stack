@@ -55,11 +55,11 @@ module.exports = function (grunt) {
 			html: {
 				src: ['<%= dirs.app %>/frontend/index.html'],
 				ignorePath: /\.\.\/\.\.\//
-			},
+			}<% if(filters.sass) { %>,
 			sass: {
 				src: ['<%= dirs.app %>/frontend/css/**.{scss,sass}'],
-				ignorePath: /(\.\.\/\.\.\/){1,2}bower_components\//
-			}
+				ignorePath: /(\.\.\/\.\.\/\.\.\/){1,2}bower_components\//
+			}<% } %>
 		},
 
 		useminPrepare: {
@@ -79,17 +79,17 @@ module.exports = function (grunt) {
 		},
 
 		concurrent: {
-			app: ['compass:app'],
+			app: [<% if(filters.sass) { %>'compass:app'<% } %>],
 			build: ['compass:build','imagemin','svgmin']
 		},
 
 		autoprefixer: {
 			options: { 
 				browsers: ['last 1 version'] 
-			},
+			}<% if(filters.sass) { %>,
 			css: { 
 				files: [ { expand: true, cwd: '.tmp/css', src: '**/*.css', dest: '.tmp/css' } ] 
-			}
+			}<% } %>
 		},
 
 		ngAnnotate: {
@@ -129,7 +129,7 @@ module.exports = function (grunt) {
 				]
 			}
 		},
-
+		
 		compass: { 
 			app: {
 				options: { 
@@ -187,12 +187,16 @@ module.exports = function (grunt) {
 					'newer:jshint:all'
 				] 
 			},
-			styles: { 
+			styles: { <% if(filters.sass) { %>
 				files: [
 					'<%= dirs.app %>/frontend/css/{,*/}*.{scss,sass}'
-				], tasks: [
+				], 
+				tasks: [
 					'compass:app', 'autoprefixer'
-				] 
+				] <% } else { %>
+				files: [
+					'<%= dirs.app %>/frontend/css/{,*/}*.css'
+				]<% } %>
 			},
 			gruntfile: { 
 				files: [
@@ -282,6 +286,18 @@ module.exports = function (grunt) {
 			}
 		},
 
+		<% if (!filters.sass) { %>
+		cssmin: {
+			css: {
+				files: [{
+					expand: true,
+					cwd: '<%= dirs.app %>/frontend/css',
+					src: '{,*/}*.css',
+					dest: '<%= dirs.build %>/frontend/css'
+				}]
+			}
+		},<% } %>
+
 		svgmin: {
 			options: {
 				plugins: [
@@ -305,19 +321,6 @@ module.exports = function (grunt) {
 						dest: '<%= dirs.build %>/frontend/img'
 					}
 				]
-			}
-		},
-
-		editJson: {
-			pkg : {
-				action: 'remove',
-				target: 'devDependencies',
-				files: [{
-					expand: true, 
-					cwd: '.', 
-					src: 'package.json',
-					dest: '<%= dirs.build %>/package.json'
-				}]
 			}
 		}
 	});
