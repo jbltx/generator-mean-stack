@@ -1,6 +1,6 @@
 {
   "name": "generator-mean-stack",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An other Yeoman Generator for MEAN (MongoDB, ExpressJS, AngularJS, NodeJS) applications",
   "license": "MIT",
   "main": "app/index.js",
