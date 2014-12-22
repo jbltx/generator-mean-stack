@@ -6,7 +6,7 @@ var User 			= mongoose.model('User');
 var Remember		= mongoose.model('Remember');
 
 
-module.exports = function (passport <% if(filters.mail) { %>, transporter<% } %>) {
+module.exports = function (env, passport <% if(filters.mail) { %>, transporter<% } %>) {
 	passport.serializeUser(function(user, done) {
 		done(null, user._id);
 	});

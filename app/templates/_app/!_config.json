@@ -66,5 +66,52 @@
 				"pass": "gpassword"
 			}
 		}<% } %>
-	}
+	}<% if(filters.oauth) { %>,
+
+	
+	"oauth": {
+
+		"facebook": {
+
+			"clientID": "",
+
+			"clientSecret": ""
+
+		},
+
+		"google": {
+
+			"consumerKey": "",
+
+			"consumerSecret": ""
+
+		},
+
+		"github": {
+
+			"clientID": "",
+
+			"clientSecret": ""
+
+		},
+
+		"twitter": {
+
+			"consumerKey": "",
+
+			"consumerSecret": ""
+
+		},
+
+		"linkedin": {
+
+			"consumerKey": "",
+
+			"consumerSecret": ""
+			
+		}
+
+	}<% } %>
+
+
 }
