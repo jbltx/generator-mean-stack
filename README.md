@@ -59,6 +59,10 @@ Scaffold a new MEAN stack project
 yo mean-stack
 ```
 
+**Note: If you want to test user authentication in the new generated project, you need to leave ngRoute, ngCookies and nodemailer**
+
+**You also need Bootstrap and Font Awesome to get the good demo project style**
+
 ## Generators
 
 Available generators:

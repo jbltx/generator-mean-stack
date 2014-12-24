@@ -46,7 +46,14 @@
                 <input class="form-control" type="password" name="password" ng-model="user.password" placeholder="Password">
             </div>
             <p><input type="checkbox" name="remember" ng-model="user.remember"> Remember Me<p>
-             <p style="color:red">{{signInMessage}}</p>
+             <p style="color:red">{{signInMessage}}</p><% if(filters.oauth) { %>
+            <ul style="list-style:none"><% if(filters.Facebook) { %>
+                <li style="display:inline;margin-right:10px;"><a href ><img src="/img/facebook.png" height="45"></a></li><% } %><% if(filters.Twitter) { %>
+                <li style="display:inline;margin-right:10px;"><a href ><img src="/img/twitter.png" height="45"></a></li><% } %><% if(filters.Google) { %>
+                <li style="display:inline;margin-right:10px;"><a href ><img src="/img/google.png" height="45"></a></li><% } %><% if(filters.LinkedIn) { %>
+                <li style="display:inline;margin-right:10px;"><a href ><img src="/img/linkedin.png" height="45"></a></li><% } %><% if(filters.GitHub) { %>
+                <li style="display:inline;margin-right:10px;"><a href ><img src="/img/github.png" height="45"></a></li><% } %>
+            </ul><% } %>
         </div>
 
         <div class="modal-footer">

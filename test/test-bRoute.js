@@ -18,7 +18,7 @@ describe('mean-stack:bRoute', function () {
       .on('end', done);
   });
 
-  it('creates files', function () {
+  it('should create a new backend route', function () {
     assert.file([
       'app/backend/router/routes/test.js'
     ]);

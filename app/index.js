@@ -92,12 +92,12 @@ module.exports = yeoman.generators.Base.extend({
 
         var done = this.async();
 
-        this.prompt([/*{
+        this.prompt([{
           type: 'checkbox',
           name: 'oauth',
           message: 'Mongoose provides a local strategy by default. Please choose others needed strategies :',
           choices: ['Google','Facebook','Twitter','LinkedIn', 'Github']
-        },*/{
+        },{
           type: 'confirm',
           name: 'nodemailer',
           message: 'Do you want to use nodemailer ? (To send emails to new users, etc...)',
@@ -105,16 +105,16 @@ module.exports = yeoman.generators.Base.extend({
         }], function (answers) {
 
           this.filters.mail = answers.nodemailer;
-	      if(answers.oauth) {
-			if(answers.oauth.length) this.filters.oauth = true;
-		    answers.oauth.forEach(function(oauthStrategy) {
-			  this.filters[oauthStrategy] = true;
-		    }.bind(this));
-		  }
+  	      if(answers.oauth) {
+      			if(answers.oauth.length) this.filters.oauth = true;
+      		    answers.oauth.forEach(function(oauthStrategy) {
+      			  this.filters[oauthStrategy] = true;
+      		    }.bind(this));
+      		  }
 
-          done();
+            done();
 
-        }.bind(this));
+          }.bind(this));
 
 
       },
@@ -127,38 +127,72 @@ module.exports = yeoman.generators.Base.extend({
 
 
         this.prompt([{
+          type: 'confirm',
+          name: 'sass',
+          message: 'Would you like to use Sass (with Compass) ?',
+          default: true
+        },{
+          type: 'confirm',
+          name: 'bootstrap',
+          message: 'Would you like to use Bootstrap ?',
+          default: true
+        },{
+          type: 'confirm',
+          name: 'bootstrapSass',
+          message: 'Would you like to use Sass version of Bootstrap ?',
+          default: true
+        },{
+          type: 'confirm',
+          name: 'fontAwesome',
+          message: 'Would you like to use Font Awesome ?'
+        },{
           type: 'checkbox',
           name: 'frontendGoodies',
-          message: 'The generator will set up some standard components (jQuery, Bootstrap, ngRoute, Font Awesome, ...)\n'+
-                   'Choose your extra components for the frontend :',
+          message: 'What frontend modules do you want ?',
           choices: [{
-            value: 'sass',
-            name: 'SASS / SCSS support',
+            value: 'ngAnimate',
+            name: 'angular-ng-animate',
+            checked: true
+          }, {
+            value: 'ngCookies',
+            name: 'angular-ng-cookies',
             checked: true
           }, {
             value: 'ngResource',
-            name: 'Angular Resource'
+            name: 'angular-ng-resource',
+            checked: true
           }, {
-            value: 'ngCookies',
-            name: 'Angular Cookies'
+            value: 'ngRoute',
+            name: 'angular-ng-route',
+            checked: true
           }, {
             value: 'ngSanitize',
-            name: 'Angular Sanitize'
+            name: 'angular-ng-sanitize',
+            checked: true
           }, {
-            value: 'lodash',
-            name: 'lodash'
+            value: 'ngTouch',
+            name: 'angular-ng-touch',
+            checked: true
           }, {
             value: 'uiRouter',
-            name: 'Angular UI Router'
+            name: 'angular-ui-router',
+            checked: true
+          }, {
+            value: 'lodash',
+            name: 'lodash',
+            checked: true
           }]
         }], function (answers) {
-            
+            this.filters.sass = answers.sass;
+            this.filters.bootstrap = answers.bootstrap;
+            this.filters.bootstrapSass = answers.bootstrapSass;
+            this.filters.fontAwesome = answers.fontAwesome;
             if(answers.frontendGoodies) {
-		        if(answers.frontendGoodies.length) this.filters.goodies = true;
-		        answers.frontendGoodies.forEach(function(goodie) {
-		          this.filters[goodie] = true;
-		        }.bind(this));
-		    }
+  		        if(answers.frontendGoodies.length) this.filters.goodies = true;
+  		        answers.frontendGoodies.forEach(function(goodie) {
+  		          this.filters[goodie] = true;
+  		        }.bind(this));
+		        }
 
             done();
 
@@ -175,14 +209,12 @@ module.exports = yeoman.generators.Base.extend({
 
     generateProject: function () {
 
-      this.log(JSON.stringify(this.filters, null, 4));
-
       var self = this;
       var files = this.expandFiles('**',{dot: true, cwd: this.sourceRoot()});
       var src, dest, filteredPath;
 
       if(this.filters.sass) {
-      	leaveFile(files, '_app/_frontent/_css/_styles.css');
+      	leaveFile(files, '_app/_frontend/_css/_styles.css');
       } else {
       	leaveFile(files, '_app/_frontend/_css/_styles.scss');
       	leaveFile(files, '_app/_frontend/_css/_--variables.scss');
@@ -193,7 +225,34 @@ module.exports = yeoman.generators.Base.extend({
       if(!this.filters.mail) {
       	leaveFile(files, '_app/_backend/_templates/_confirm-mail.js');
       	leaveFile(files, '_app/_backend/_templates/_theft-mail.js');
+        leaveFile(files, '_app/_backend/_router/_auth/_email.js');
+        leaveFile(files, '_app/_frontend/_views/_mail.html');
       }
+
+      if(!this.filters.Facebook) {
+        leaveFile(files, '_app/_backend/_lib/_strategies/!_facebook.js');
+      }
+
+      if(!this.filters.Twitter) {
+        leaveFile(files, '_app/_backend/_lib/_strategies/!_twitter.js');
+      }
+
+      if(!this.filters.Github) {
+        leaveFile(files, '_app/_backend/_lib/_strategies/!_github.js');
+      }
+
+      if(!this.filters.Google) {
+        leaveFile(files, '_app/_backend/_lib/_strategies/!_google.js');
+      }
+
+      if(!this.filters.LinkedIn) {
+        leaveFile(files, '_app/_backend/_lib/_strategies/!_linkedin.js');
+      }
+
+      if(!this.filters.oauth) {
+        leaveFile(files, '_app/_backend/_router/_auth/!_oauth.js');
+      }
+
 
       files.forEach(function (f) {
 
@@ -220,7 +279,7 @@ module.exports = yeoman.generators.Base.extend({
               	build: '<%= dirs.build %>'
               }
           });
-          
+          self.log('\''+dest+'\',');
 
         }
         else {
@@ -228,7 +287,7 @@ module.exports = yeoman.generators.Base.extend({
           dest = self.destinationPath(filteredPath);
 
           self.copy(src, dest);
-
+          self.log('\''+dest+'\',');
         }
  
       });
