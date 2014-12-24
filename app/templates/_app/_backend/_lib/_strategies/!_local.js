@@ -4,9 +4,10 @@ var LocalStrategy 	= require('passport-local').Strategy;
 var mongoose 		= require('mongoose');
 var User 			= mongoose.model('User');
 var Remember		= mongoose.model('Remember');
+var path 			= require('path');
 
 
-module.exports = function (passport <% if(filters.mail) { %>, transporter<% } %>) {
+module.exports = function (env, passport <% if(filters.mail) { %>, transporter<% } %>) {
 	passport.serializeUser(function(user, done) {
 		done(null, user._id);
 	});
@@ -49,7 +50,7 @@ module.exports = function (passport <% if(filters.mail) { %>, transporter<% } %>
 					newUser.save(function (err) {
 						if (err) { throw err; }
 						<% if(filters.mail) { %>
-						var mailOptions = require('../templates/confirm-mail')(email, req.body.fullname, validMailKey);
+						var mailOptions = require(path.join(__dirname, '../../templates/confirm-mail'))(email, req.body.fullname, validMailKey);
 						transporter.sendMail(mailOptions, function(error, info) {
 							if (error) { console.log(error); }
 							console.log(info.response);
@@ -122,7 +123,7 @@ module.exports = function (passport <% if(filters.mail) { %>, transporter<% } %>
 
 								<% if(filters.mail) { %>
 
-								var mailOptions = require('../templates/theft-mail')(cookieLogin);
+								var mailOptions = require(path.join(__dirname, '../../templates/theft-mail'))(cookieLogin);
 
 								transporter.sendMail(mailOptions, function (err, info) {
 

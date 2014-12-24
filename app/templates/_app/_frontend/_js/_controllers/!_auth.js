@@ -1,29 +1,27 @@
 'use strict';
 
 angular.module('<%= appName %>')
-	.controller('HeaderCtrl', function ($scope, $modal, $http, $window) {
+	.controller('HeaderCtrl', function ($scope, $modal, $http, $window, $cookieStore) {	
 
-		
-		var checkRemember = function ($q, $timeout, $remember, $window, $http) {
-			var deferred = $q.defer();
-			if($remember !== 'none') {
-				$http.post('/signin').success(function () {
-					$timeout(function () { deferred.reject(); }, 0);
-					$window.location.href='/admin';
-				})
-				.error(function (err, status) {
-					if (err && status === 401) {
-						document.cookie = 'remember=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-					}
-					$timeout(deferred.resolve, 0 );
-				});
-			} 
-			else {
-				$timeout(deferred.resolve, 0 );
-			}
-			return deferred.promise;
-		};
-		
+
+		var isRemembered = function ($q, $cookies, $http, $timeout, $location, $cookieStore) {
+            var deferred = $q.defer();
+            if($cookies.remember) {
+                $http.post('/signin').success(function () {
+                    $timeout(function() { deferred.reject();}, 0);
+                    $location.url('/admin');
+                }).error(function (err, status) {
+                    if(err && status === 401) {
+                        $cookieStore.remove('remember');
+                    }
+                    $timeout(deferred.resolve, 0);
+                });
+            }
+            else {
+                $timeout(deferred.resolve, 0);
+            }
+            return deferred.promise;
+        };
 
 
 		$scope.signinModal = function () {
@@ -32,7 +30,7 @@ angular.module('<%= appName %>')
 					templateUrl:'signin.html',
 					controller: 'SigninCtrl',
 					size: 'sm',
-					resolve: {remembered: checkRemember}
+					resolve: {remembered: isRemembered}
 				});
 		};
 		$scope.signupModal = function () {
@@ -48,6 +46,7 @@ angular.module('<%= appName %>')
 			$http
 				.post('/signout')
 				.success(function () {
+					$cookieStore.remove('remember');
 					$window.location.href='/';
 				});
 
@@ -71,6 +70,7 @@ angular.module('<%= appName %>')
 		$scope.cancel = function () {
 		    $modalInstance.dismiss('cancel');
 		};
+		
  	});
 
 angular.module('<%= appName %>')
@@ -91,26 +91,13 @@ angular.module('<%= appName %>')
 		};
  	});
 
-
+<% if(filters.mail) { %>
 angular.module('<%= appName %>')
-	.controller('ValidateCtrl', function ($scope, $http, $routeParams) {
+	.controller('ValidateCtrl', function ($scope, $http, $routeParams, $location) {
 		$scope.title = 'Validate Email Address';
 		$scope.message = 'Please wait...';
 
-		if ($routeParams.key) {
-			$http.post('/validate', {key: $routeParams.key})
-				.success(function () {
-					$scope.message = 'Your account is actived. Please sign in now.';
-				})
-				.error(function (data, status) {
-					if(status === 404) {
-						$scope.message = 'You sent a bad link, please try again to sign up.';
-					}
-					if(status === 403) {
-						$scope.message = 'This email address is already actived.';
-					}
-				});
-		}
+		
 		if ($routeParams.email && $routeParams.key) {
 			$http.post('/unvalidate', {email: $routeParams.email, key: $routeParams.key})
 				.success(function () {
@@ -127,4 +114,24 @@ angular.module('<%= appName %>')
 					}
 				});
 		}
+
+		if ($routeParams.key) {
+			$http.post('/validate', {key: $routeParams.key})
+				.success(function () {
+					$scope.message = 'Your account is actived. Please sign in now.';
+				})
+				.error(function (data, status) {
+					if(status === 404) {
+						$scope.message = 'You sent a bad link, please try again to sign up.';
+					}
+					if(status === 403) {
+						$scope.message = 'This email address is already actived.';
+					}
+				});
+		}
+		else {
+			$location.url('/');
+		}
 	});
+
+<% } %>

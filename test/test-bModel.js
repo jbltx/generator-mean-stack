@@ -22,7 +22,7 @@ describe('mean-stack:bModel', function () {
       .on('end', done);
   });
 
-  it('creates files', function () {
+  it('should create a new backend model', function () {
     assert.file([
       'app/backend/models/test.js'
     ]);

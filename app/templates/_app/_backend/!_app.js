@@ -59,7 +59,7 @@ modelsDir.forEach(function (file) {
 */
 strategiesDir.forEach(function (file) {
 	if (file.indexOf('.js') >-1) {
-		require('./lib/strategies/'+file)(passport<% if(filters.mail) { %>, transporter<% } %>);
+		require('./lib/strategies/'+file)(app.get('env'), passport<% if(filters.mail) { %>, transporter<% } %>);
 	}
 });
 

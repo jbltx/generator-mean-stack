@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('<%= appName %>').factory('ajaxInterceptor', ['$q','$location',function ($q,$location) {
+angular.module('<%= appName %>').factory('InterceptorService', ['$q','$location',function ($q,$location) {
 
 	var ajaxInterceptor = {
 		response: function (response) {

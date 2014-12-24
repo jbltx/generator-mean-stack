@@ -92,7 +92,9 @@ module.exports = yeoman.generators.Base.extend({
 
 	end: function () {
 		this.log(chalk.green.bold('\nThe route generation is done.\n'));
-		this.log(chalk.green.bold('The process continues with Mongoose model creation...\n'));
+		if (this.isCrud && !this.options['skip-model']) {
+			this.log(chalk.green.bold('The process continues with Mongoose model creation...\n'));
+		}
 	}
 
 
